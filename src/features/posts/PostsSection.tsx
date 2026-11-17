@@ -42,7 +42,7 @@ export function PostsSection({ userId, userName }: PostsSectionProps) {
 
   return (
     <section aria-labelledby="posts-title" className="flex flex-col md:min-h-0 md:flex-1">
-      <div className="flex items-center gap-2 px-4 pt-4 md:px-6">
+      <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-3 md:px-6">
         <h3 id="posts-title" className="text-base font-semibold text-slate-900">
           Publicaciones
         </h3>

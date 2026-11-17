@@ -115,7 +115,9 @@ describe("nueva publicación", () => {
 
     // Se cierra el panel, se vuelve a la página 1 y la nueva va la primera.
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(postTitles()[0]).toBe("Mi publicación");
+    // El router aplica el cambio de ?page= en una transición, un instante después de cerrar
+    // el panel: hay que esperar a que la lista se actualice.
+    await waitFor(() => expect(postTitles()[0]).toBe("Mi publicación"));
     expect(screen.getByText("1–5 de 8")).toBeInTheDocument();
     expect(screen.getByText("Publicación creada")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Nueva publicación" })).toHaveFocus();

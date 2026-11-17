@@ -64,7 +64,7 @@ export function UserDetail() {
 
 function UserCard({ user }: { user: User }) {
   return (
-    <header className="flex items-start gap-4 border-b border-slate-200 p-4 md:p-6">
+    <header className="@container flex items-start gap-4 border-b border-slate-200 p-4 md:p-6">
       <UserAvatar id={user.id} name={user.name} size="lg" />
       <div className="min-w-0 flex-1">
         <h2
@@ -76,7 +76,7 @@ function UserCard({ user }: { user: User }) {
           {user.name}
         </h2>
         <p className="truncate text-sm text-slate-600">@{user.username}</p>
-        <dl className="mt-3 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+        <dl className="mt-3 grid gap-x-6 gap-y-1 text-sm @md:grid-cols-2">
           <Detail label="Email">
             <a href={`mailto:${user.email}`} className={LINK}>
               {user.email}

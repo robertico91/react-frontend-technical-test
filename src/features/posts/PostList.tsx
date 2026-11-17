@@ -71,7 +71,7 @@ export function PostList({ userId, userName }: PostListProps) {
         // Desplazable con teclado en escritorio: necesita foco y nombre.
         tabIndex={0}
         aria-label={`Publicaciones de ${userName}`}
-        className="flex scroll-mt-28 flex-col gap-3 p-4 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none focus-visible:ring-inset md:min-h-0 md:flex-1 md:overflow-y-auto md:overscroll-contain md:px-6"
+        className="flex scroll-mt-28 flex-col gap-3 p-4 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none focus-visible:ring-inset md:min-h-0 md:flex-1 md:[scrollbar-width:thin] md:overflow-y-auto md:overscroll-contain md:px-6"
       >
         {current.items.map((post) => (
           <li key={post.id}>
