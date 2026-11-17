@@ -57,7 +57,8 @@ src/
   features/
     users/      componentes, hooks y utilidades de usuarios
     posts/      componentes, hooks, validatePost.ts
-  components/   piezas reutilizables (AppHeader, Button, NotFound, Skeleton, StatusMessage)
+  components/   piezas reutilizables (AppHeader, Button, EmptyState, NotFound, Skeleton, StatusMessage)
+  hooks/        hooks de la app que no son de una feature (usePageTitle, useRecoverFocusOnNavigation)
   test/         solo infraestructura: setup, servidor MSW, handlers, renderApp
   App.tsx       layout y rutas (sin router: el BrowserRouter está en main.tsx)
   main.tsx      providers: QueryClientProvider y BrowserRouter

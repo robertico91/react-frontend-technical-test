@@ -1,4 +1,5 @@
 import type { UseQueryResult } from "@tanstack/react-query";
+import { NavLink } from "react-router";
 import type { User } from "@/api/types";
 import { Skeleton, SkeletonBlock } from "@/components/Skeleton";
 import { StatusMessage } from "@/components/StatusMessage";
@@ -63,16 +64,33 @@ export function UserResults({ query, users, search, onClearSearch }: UserResults
   return (
     <ul className="divide-y divide-slate-100">
       {users.map((user) => (
-        <li key={user.id} className="flex items-center gap-3 px-4 py-3">
-          <UserAvatar id={user.id} name={user.name} />
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-slate-900" title={user.name}>
-              {user.name}
-            </p>
-            <p className="truncate text-xs text-slate-600" title={user.email}>
-              {user.email}
-            </p>
-          </div>
+        <li key={user.id}>
+          <NavLink
+            to={`/users/${user.id}`}
+            className="group flex items-center gap-3 px-4 py-3 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none focus-visible:ring-inset aria-[current=page]:bg-brand/10"
+          >
+            <UserAvatar id={user.id} name={user.name} />
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-slate-900" title={user.name}>
+                {user.name}
+              </p>
+              <p className="truncate text-xs text-slate-600" title={user.email}>
+                {user.email}
+              </p>
+            </div>
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className="size-4 shrink-0 text-slate-400 group-aria-[current=page]:text-brand"
+            >
+              <path d="m8 5 5 5-5 5" />
+            </svg>
+          </NavLink>
         </li>
       ))}
     </ul>

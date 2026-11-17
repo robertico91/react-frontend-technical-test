@@ -4,7 +4,12 @@ import { UserResults } from "./UserResults";
 import { UserSearch } from "./UserSearch";
 import { useUsers } from "./useUsers";
 
-export function UserList() {
+type UserListProps = {
+  /** En móvil se oculta con CSS (no se desmonta) para conservar la búsqueda. */
+  hiddenOnMobile: boolean;
+};
+
+export function UserList({ hiddenOnMobile }: UserListProps) {
   const query = useUsers();
   const [search, setSearch] = useState("");
   // Con 10 usuarios no hace falta debounce: basta con que escribir tenga prioridad sobre filtrar.
@@ -22,11 +27,16 @@ export function UserList() {
   return (
     <section
       aria-labelledby="users-title"
-      className="flex min-h-0 flex-col bg-white md:rounded-xl md:border md:border-slate-200 md:shadow-sm"
+      className={`${hiddenOnMobile ? "hidden md:flex" : "flex"} min-h-0 flex-col bg-white md:rounded-xl md:border md:border-slate-200 md:shadow-sm`}
     >
       <div className="flex flex-col gap-3 border-b border-slate-200 px-4 py-3">
         <div className="flex items-center gap-2">
-          <h2 id="users-title" className="text-lg font-semibold text-slate-900">
+          <h2
+            id="users-title"
+            tabIndex={-1}
+            data-screen-title=""
+            className="text-lg font-semibold text-slate-900 focus:outline-none"
+          >
             Usuarios
           </h2>
           {/* Región presente desde el inicio para que el cambio de número se anuncie. */}

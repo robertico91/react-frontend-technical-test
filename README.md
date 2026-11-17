@@ -37,6 +37,10 @@ La API responde muy rápido, así que en local apenas se ven los estados de carg
 - **Búsqueda en el cliente, sin pedir a la API.** JSONPlaceholder admite `name_like`, pero con 10 usuarios ya cargados filtrar en memoria es instantáneo y no genera peticiones ni estados de carga nuevos. `filterUsers` es una función pura que no distingue mayúsculas ni tildes (`normalize("NFD")`), así que "LEÁN" encuentra a Leanne.
 - **Sin debounce.** Con 10 elementos filtrar no cuesta nada; uso `useDeferredValue` para que escribir tenga siempre prioridad sobre volver a pintar la lista.
 - **Todo estado vacío ofrece una salida.** Si la búsqueda no encuentra nada, "Ver todos los usuarios" la limpia y devuelve el foco al buscador. El buscador está siempre visible, también mientras cargan los datos o si fallan, y el contador pasa a "2 de 10" al filtrar.
+- **React Router, con el usuario elegido en la URL (`/users/:userId`).** Se puede compartir el enlace, funciona el botón atrás y sobrevive a un refresh. La fila activa se marca con `aria-current="page"`, que pone `NavLink`.
+- **El detalle no pide el usuario aparte.** Lo saca de la lista ya cargada (misma query, misma caché). Un id que no es un entero positivo o que no está en la lista (`/users/999`, `/users/abc`) muestra "Usuario no encontrado" en vez de una pantalla rota; cualquier otra ruta, "Página no encontrada".
+- **En móvil, lista o detalle.** El detalle tiene una barra "← Volver a usuarios" fija bajo la cabecera. La lista se oculta con CSS en lugar de desmontarse, para que al volver siga la búsqueda que había.
+- **Foco y título de pestaña al navegar.** Si al navegar se oculta el elemento con el foco (en móvil, la lista al abrir un usuario), el foco va al título de la pantalla nueva en vez de perderse en el `<body>`. Cada pantalla pone su título en la pestaña.
 
 ## Qué haría con más tiempo
 
@@ -52,6 +56,7 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - Que me consultara antes de cada commit, en vez de encadenarlos: quiero revisar qué entra en cada uno.
 - El cliente de la API y la lista de usuarios con sus estados de carga, error y vacío.
 - La búsqueda por nombre en el cliente, sin distinguir mayúsculas ni tildes, con un estado vacío que permita volver a ver todos.
+- El routing con `/users/:userId`, el "Usuario no encontrado" y la navegación en móvil entre lista y detalle.
 
 **Qué acepté**
 
@@ -72,4 +77,5 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - Le pedí revisar un commit ya hecho sin tocar nada. Comprobó punto por punto la configuración y, como el alias `@/` aún no lo usaba ningún import, lo verificó con un archivo temporal fuera del proyecto, en TypeScript y en Vite.
 - Al copiar las reglas a `CLAUDE.md` detectó que la estructura y la sección de tests nombraban distinto el helper de render de los tests, y lo unificó.
 - En la búsqueda probó en el navegador "LEÁN" (mayúsculas y tilde), una búsqueda sin resultados y el botón "Ver todos los usuarios", comprobando que el foco volvía al buscador.
+- En el routing probó `/users/999`, `/users/abc`, `/users/0` y una ruta inventada, y en móvil abrió un usuario con el teclado para comprobar que el foco pasaba al título del detalle y, al volver, al de la lista, con la búsqueda intacta.
 - Comprueba cada pantalla en el navegador, no solo con el compilador. Para ver la carga y el error rompió la URL de la API un momento y la restauró editando el archivo.
