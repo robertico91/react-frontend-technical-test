@@ -41,6 +41,9 @@ La API responde muy rápido, así que en local apenas se ven los estados de carg
 - **El detalle no pide el usuario aparte.** Lo saca de la lista ya cargada (misma query, misma caché). Un id que no es un entero positivo o que no está en la lista (`/users/999`, `/users/abc`) muestra "Usuario no encontrado" en vez de una pantalla rota; cualquier otra ruta, "Página no encontrada".
 - **En móvil, lista o detalle.** El detalle tiene una barra "← Volver a usuarios" fija bajo la cabecera. La lista se oculta con CSS en lugar de desmontarse, para que al volver siga la búsqueda que había.
 - **Foco y título de pestaña al navegar.** Si al navegar se oculta el elemento con el foco (en móvil, la lista al abrir un usuario), el foco va al título de la pantalla nueva en vez de perderse en el `<body>`. Cada pantalla pone su título en la pestaña.
+- **Ficha del usuario en la cabecera del detalle.** La lista solo muestra nombre y @usuario, que es más corto y reconocible que el email; el resto (email con `mailto:`, web, empresa y ciudad, en formato "Etiqueta: valor") va arriba del detalle, sin otra petición. El total de publicaciones va justo a continuación del título, no al final de la línea como en "Usuarios", porque ese hueco es para el botón "Nueva publicación".
+- **Publicaciones paginadas en el cliente, 5 por página, con la página en `?page=`.** En el servidor no podría: las publicaciones que se creen solo existirán en la caché. Una página fuera de rango (`?page=9`, `?page=abc`) se ajusta a la primera o la última en vez de mostrar una lista vacía. La lógica está en una función pura, `paginate`.
+- **En escritorio solo se desplazan las publicaciones.** La ficha y el título quedan fijos y la paginación siempre visible debajo. La lista tiene `tabIndex={0}` y nombre para poder desplazarla con el teclado. Al cambiar de página vuelve arriba, y en móvil se coloca justo bajo la cabecera fija.
 
 ## Qué haría con más tiempo
 
@@ -57,6 +60,7 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - El cliente de la API y la lista de usuarios con sus estados de carga, error y vacío.
 - La búsqueda por nombre en el cliente, sin distinguir mayúsculas ni tildes, con un estado vacío que permita volver a ver todos.
 - El routing con `/users/:userId`, el "Usuario no encontrado" y la navegación en móvil entre lista y detalle.
+- Las publicaciones del usuario elegido con la ficha completa del usuario y paginación.
 
 **Qué acepté**
 
@@ -66,6 +70,8 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 **Qué corregí**
 
 - Le pedí mover el contador de usuarios a la izquierda del título "Usuarios" (lo hizo con `order-first`, sin cambiar el orden del HTML, para que el lector de pantalla siga leyendo primero el título). Al verlo me convenció menos: lo devolví a la derecha y terminé dejándolo al final de la línea (`ml-auto`), separado del título y alineado con el borde de la lista.
+- La vista de publicaciones que me propuso me pareció correcta (tarjetas, ficha fija arriba, paginación y estados), pero le faltaban detalles que le pedí añadir: el total de publicaciones junto al título, el @usuario en lugar del email en las filas de la lista y separar con dos puntos la etiqueta del valor en la ficha ("Email: …"), que antes iban pegados y costaba distinguirlos. El total lo puso al final de la línea, copiando el de "Usuarios", y le pedí moverlo a continuación del título: ese hueco a la derecha es para el botón "Nueva publicación".
+- Al cambiar de página en móvil, las publicaciones quedaban en parte tapadas por la cabecera y la barra "Volver", que son fijas. Lo vio al medir la posición en el navegador: el `scrollIntoView` con `block: "nearest"` no respetaba el margen en una lista más alta que la pantalla. Lo cambió a `"start"`.
 - Su primera versión de la lista cambiaba los datos ya cargados por el mensaje de error si fallaba un refetch en segundo plano. Lo detectó él mismo al probar el estado de error, y ahora el error solo aparece cuando no hay datos que enseñar.
 
 **Qué le consulté**
@@ -78,4 +84,5 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - Al copiar las reglas a `CLAUDE.md` detectó que la estructura y la sección de tests nombraban distinto el helper de render de los tests, y lo unificó.
 - En la búsqueda probó en el navegador "LEÁN" (mayúsculas y tilde), una búsqueda sin resultados y el botón "Ver todos los usuarios", comprobando que el foco volvía al buscador.
 - En el routing probó `/users/999`, `/users/abc`, `/users/0` y una ruta inventada, y en móvil abrió un usuario con el teclado para comprobar que el foco pasaba al título del detalle y, al volver, al de la lista, con la búsqueda intacta.
+- En la paginación probó `?page=9`, `?page=abc` y `?page=-1`, que al cambiar de usuario se vuelve a la página 1 y que en escritorio no se desplaza la página, solo la lista.
 - Comprueba cada pantalla en el navegador, no solo con el compilador. Para ver la carga y el error rompió la URL de la API un momento y la restauró editando el archivo.

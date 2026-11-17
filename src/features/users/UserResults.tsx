@@ -74,8 +74,8 @@ export function UserResults({ query, users, search, onClearSearch }: UserResults
               <p className="truncate text-sm font-medium text-slate-900" title={user.name}>
                 {user.name}
               </p>
-              <p className="truncate text-xs text-slate-600" title={user.email}>
-                {user.email}
+              <p className="truncate text-xs text-slate-600" title={`@${user.username}`}>
+                @{user.username}
               </p>
             </div>
             <svg
