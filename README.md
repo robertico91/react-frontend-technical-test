@@ -1,5 +1,7 @@
 # Usuarios y publicaciones
 
+[![CI](https://github.com/robertico91/react-frontend-technical-test/actions/workflows/ci.yml/badge.svg)](https://github.com/robertico91/react-frontend-technical-test/actions/workflows/ci.yml)
+
 Aplicación de página única en React + TypeScript que consume la API pública [JSONPlaceholder](https://jsonplaceholder.typicode.com): lista de usuarios con búsqueda y, para cada usuario, sus publicaciones y un formulario para crear una nueva.
 
 ## Cómo ejecutarlo
@@ -57,6 +59,7 @@ La API responde muy rápido, así que en local apenas se ven los estados de carg
   - **Funciones puras**: `validatePost`, `filterUsers`, `sortUsersByName`, `getInitials`, `paginate` y `parseUserId`.
   - Para comprobar que sirven rompí la app a propósito, una regla cada vez, y en cada caso falló el test que debía: usar el id de la API (falla el de keys repetidas), quitar el `trim()` (los de solo espacios), quitar el orden (el de la lista ordenada) y quitar la comprobación de `res.ok` (los tres de error). Los errores del servidor de los tests responden un 500 con cuerpo JSON válido justo para eso: sin mirar `res.ok` se tratarían como éxito.
 - **Accesibilidad revisada con axe y con teclado.** En escritorio, el primer Tab muestra "Saltar la lista de usuarios", que lleva al detalle sin recorrer el buscador y los diez usuarios; en móvil no hace falta porque se ve la lista o el detalle. El `<main>` envuelve lista y detalle, porque en la portada de móvil la lista es el contenido principal. `src/a11y.test.tsx` pasa axe en la portada, el detalle, el formulario (abierto y con errores) y "Usuario no encontrado"; sin la regla de contraste, que jsdom no puede calcular y reviso en el navegador. Ojo: axe da por bueno el placeholder como nombre de un campo, así que no detecta un `<label>` que falte si hay placeholder.
+- **CI con GitHub Actions.** En cada push a `main` y en cada pull request pasan `typecheck`, `lint`, el formato, los tests y el `build` con Node 22, instalando con `pnpm install --frozen-lockfile` para usar exactamente las versiones del lockfile. Lo generé en Windows, así que antes comprobé que incluye los binarios nativos de Linux (rolldown, lightningcss y el de Tailwind).
 
 ## Qué haría con más tiempo
 
@@ -83,6 +86,7 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - Preparar los tests: Vitest, Testing Library y MSW, con un `renderApp(ruta)` y un primer test de humo.
 - Los tests de búsqueda, validación, creación y errores, y los de las funciones puras.
 - La revisión de accesibilidad: axe en el navegador, recorrido con teclado y un test automático con axe.
+- La CI con GitHub Actions y su badge en el README.
 - Un skeleton también para el contador de publicaciones, que hasta entonces simplemente no aparecía mientras cargaban.
 - Retocar el panel del formulario: el título lo había puesto como "Nueva publicación de Leanne Graham" y le pedí dejarlo en "Nueva publicación" con una descripción debajo ("Para Leanne Graham"), y llevar los botones al final del panel en lugar de justo debajo del texto.
 - Que en móviles de menos de 375 px el botón "Nueva publicación" dijera solo "Nueva". Primero ocultó "publicación" con `sr-only`, pero al revisar el árbol de accesibilidad el botón aparecía como "Nueva" a secas; lo cambió por un `aria-label` fijo con el nombre completo.
