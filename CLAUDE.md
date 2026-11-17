@@ -57,7 +57,7 @@ src/
   features/
     users/      componentes, hooks y utilidades de usuarios
     posts/      componentes, hooks, validatePost.ts
-  components/   piezas reutilizables (AppHeader, Button, EmptyState, NotFound, Skeleton, StatusMessage)
+  components/   piezas reutilizables (AppHeader, Button, EmptyState, Field, NotFound, Pagination, SidePanel, Skeleton, StatusMessage, toast/)
   hooks/        hooks de la app que no son de una feature (usePageTitle, useRecoverFocusOnNavigation)
   test/         solo infraestructura: setup, servidor MSW, handlers, renderApp
   App.tsx       layout y rutas (sin router: el BrowserRouter está en main.tsx)
@@ -74,7 +74,7 @@ src/
 
 - `fetch` no lanza con 4xx/5xx: el cliente comprueba `res.ok` y lanza un error.
 - `POST /posts` siempre devuelve `id: 101`. Las publicaciones creadas usan un id local único, negativo y decreciente (-1, -2…: sigue siendo número y nunca coincide con los de la API); nunca el id de la respuesta como `key`.
-- La API no persiste. Las publicaciones creadas se añaden a la caché con `setQueryData`, y la query de publicaciones usa `staleTime: Infinity` y `refetchOnWindowFocus: false` para que un refetch no las borre.
+- La API no persiste. Las publicaciones creadas se añaden a la caché con `setQueryData`, y la query de publicaciones usa `staleTime: Infinity` y `refetchOnWindowFocus: false` para que un refetch no las borre, y `gcTime: Infinity` para que no se pierdan al cambiar de usuario.
 - La nueva publicación va arriba de la lista.
 - Un usuario inexistente (`/users/999`, `/users/abc`) muestra "Usuario no encontrado", no una pantalla rota. Se resuelve con la lista en caché, sin pedir el usuario aparte.
 

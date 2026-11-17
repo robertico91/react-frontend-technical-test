@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router";
 import { Button } from "@/components/Button";
 import { SidePanel } from "@/components/SidePanel";
+import { useToast } from "@/components/toast/toastContext";
 import { NewPostForm } from "./NewPostForm";
 import { PostList } from "./PostList";
+import { useCreatePost } from "./useCreatePost";
 import { usePosts } from "./usePosts";
+import type { PostDraft } from "./validatePost";
 
 type PostsSectionProps = { userId: number; userName: string };
 
@@ -11,7 +15,26 @@ type PostsSectionProps = { userId: number; userName: string };
 export function PostsSection({ userId, userName }: PostsSectionProps) {
   // Misma query que PostList: comparte caché, no hace otra petición.
   const { data } = usePosts(userId);
+  const createPost = useCreatePost(userId);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [, setSearchParams] = useSearchParams();
+  const showToast = useToast();
+
+  function openForm() {
+    createPost.reset(); // Un error de un envío anterior no debe verse al volver a abrir.
+    setIsFormOpen(true);
+  }
+
+  function handleSubmit(draft: PostDraft) {
+    createPost.mutate(draft, {
+      onSuccess: () => {
+        setIsFormOpen(false);
+        // La nueva va arriba: se vuelve a la página 1 para que se vea.
+        setSearchParams({});
+        showToast("Publicación creada");
+      },
+    });
+  }
 
   return (
     <section aria-labelledby="posts-title" className="flex flex-col md:min-h-0 md:flex-1">
@@ -29,11 +52,7 @@ export function PostsSection({ userId, userName }: PostsSectionProps) {
           )}
         </span>
         {/* Por debajo de 375 px solo se ve "Nueva"; aria-label mantiene el nombre completo. */}
-        <Button
-          className="ml-auto"
-          aria-label="Nueva publicación"
-          onClick={() => setIsFormOpen(true)}
-        >
+        <Button className="ml-auto" aria-label="Nueva publicación" onClick={openForm}>
           <span aria-hidden="true">+</span> Nueva
           <span className="max-[374px]:hidden"> publicación</span>
         </Button>
@@ -42,9 +61,19 @@ export function PostsSection({ userId, userName }: PostsSectionProps) {
       <SidePanel
         open={isFormOpen}
         onClose={() => setIsFormOpen(false)}
+        canClose={!createPost.isPending}
         title={`Nueva publicación de ${userName}`}
       >
-        <NewPostForm onSubmit={() => setIsFormOpen(false)} onCancel={() => setIsFormOpen(false)} />
+        <NewPostForm
+          onSubmit={handleSubmit}
+          onCancel={() => setIsFormOpen(false)}
+          isSubmitting={createPost.isPending}
+          submitError={
+            createPost.isError
+              ? "No se pudo publicar. Revisa la conexión e inténtalo de nuevo."
+              : undefined
+          }
+        />
       </SidePanel>
     </section>
   );

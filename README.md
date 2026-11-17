@@ -47,10 +47,17 @@ La API responde muy rápido, así que en local apenas se ven los estados de carg
 - **Formulario controlado a mano con una función pura `validatePost`.** Son dos campos obligatorios, así que react-hook-form + zod me parecía excesivo; la validación queda en una función fácil de testear. Si el formulario creciera pasaría a react-hook-form con zod, y usaría zod también para validar las respuestas de la API.
 - **Validación accesible.** Se valida al enviar y, desde ese primer intento, también al escribir, para que el error desaparezca en cuanto se corrige. Un título hecho solo de espacios no vale (`trim()`). Cada error va unido a su campo con `aria-invalid` y `aria-describedby`, y el foco salta al primer campo inválido; sin `role="alert"` por campo, que haría que se anunciaran todos a la vez.
 - **El formulario en un panel lateral derecho sobre un `<dialog>` nativo.** Con `showModal()` el navegador atrapa el foco, deja inerte la página de detrás y cierra con Escape, sin librerías. Se abre con "Nueva publicación", el foco va al título y al cerrar (×, Cancelar, Escape o clic en el fondo) vuelve al botón. Mientras está abierto la página de detrás no se desplaza. En pantallas de menos de 375 px el botón dice solo "Nueva" para que quepa junto al título; el botón lleva `aria-label="Nueva publicación"`, así que el lector de pantalla sigue oyendo el nombre completo.
+- **Las publicaciones creadas viven en la caché de TanStack Query.** La API responde pero no guarda nada, así que tras el `POST` añado la nueva arriba de la lista con `setQueryData`. Para que no desaparezca, la query de publicaciones usa `staleTime: Infinity` (un refetch la borraría), `refetchOnWindowFocus: false` y `gcTime: Infinity`: sin esto último, al cambiar de usuario la caché del anterior se libera a los 5 minutos y con ella lo creado.
+- **Ids locales para lo creado.** `POST /posts` devuelve siempre `id: 101`, así que dos publicaciones creadas tendrían la misma `key`. Uso un contador negativo y decreciente (-1, -2…): sigue siendo un número y nunca coincide con los ids de la API.
+- **Envío sin dobles clics ni cierres a medias.** Mientras se publica, el botón dice "Publicando…", los campos son `readOnly` y los botones llevan `aria-disabled` (no `disabled`, que haría perder el foco) con la protección en el código; el panel no se puede cerrar. Si sale bien se cierra, se vuelve a la página 1 para ver la nueva arriba y aparece el aviso "Publicación creada". Si falla, el error sale dentro del formulario con `role="alert"` y lo escrito se conserva para reintentar.
+- **El error de envío dentro del formulario y no en un aviso flotante.** Con el panel modal abierto el resto de la página es inerte, así que un aviso fuera del `<dialog>` no se vería bien ni sería accesible. Junto a los botones, el usuario lo ve donde está trabajando.
 
 ## Qué haría con más tiempo
 
 - **Búsqueda en el servidor si hubiera muchos usuarios.** Con miles de registros o una lista paginada no los tendría todos en memoria: pasaría a buscar en el servidor con debounce, cancelando las peticiones que ya no sirven, y paginando los resultados.
+- **Actualización optimista con rollback.** Ahora la publicación aparece cuando responde la API; con una actualización optimista saldría al instante y se retiraría si fallara.
+- **Persistir lo creado en `localStorage`.** Lo creado se pierde al recargar porque solo vive en la caché.
+- **Editar y borrar publicaciones.**
 
 ## Cómo usé la IA
 
@@ -65,6 +72,7 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - El routing con `/users/:userId`, el "Usuario no encontrado" y la navegación en móvil entre lista y detalle.
 - Las publicaciones del usuario elegido con la ficha completa del usuario y paginación.
 - El formulario de nueva publicación con validación, en un panel lateral.
+- Crear la publicación de verdad, que aparezca arriba de la lista y que no se pierda al cambiar de usuario.
 - Que en móviles de menos de 375 px el botón "Nueva publicación" dijera solo "Nueva". Primero ocultó "publicación" con `sr-only`, pero al revisar el árbol de accesibilidad el botón aparecía como "Nueva" a secas; lo cambió por un `aria-label` fijo con el nombre completo.
 
 **Qué acepté**
@@ -91,4 +99,5 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - En el routing probó `/users/999`, `/users/abc`, `/users/0` y una ruta inventada, y en móvil abrió un usuario con el teclado para comprobar que el foco pasaba al título del detalle y, al volver, al de la lista, con la búsqueda intacta.
 - En la paginación probó `?page=9`, `?page=abc` y `?page=-1`, que al cambiar de usuario se vuelve a la página 1 y que en escritorio no se desplaza la página, solo la lista.
 - En el formulario probó enviar vacío y con solo espacios, que el error del título desaparecía al escribir y que el foco iba al primer campo inválido. También los cuatro cierres del panel (Escape, ×, fondo y Cancelar), comprobando que el foco volvía a "Nueva publicación" y que el formulario se vaciaba al reabrir. Como la captura de pantalla no mostraba el `<dialog>` modal, lo verificó midiendo su posición y su contenido en el DOM.
+- Para la creación hizo dos publicaciones seguidas (sin avisos de keys duplicadas), cambió de usuario y volvió, y forzó un refetch al volver a la ventana: las dos estaban arriba. Para el error hizo fallar el `POST` desde la consola del navegador con un retraso, y comprobó que mientras tanto Escape, × y el fondo no cerraban el panel, que salía el error y que se conservaba lo escrito. Dos veces creyó ver un fallo que en realidad venía de cómo lanzaba la prueba (abrir el panel con un `.click()` por código, sin foco en el botón, y pulsar Escape antes de que empezara el envío); antes de tocar el código lo repitió como lo haría un usuario y descartó los dos.
 - Comprueba cada pantalla en el navegador, no solo con el compilador. Para ver la carga y el error rompió la URL de la API un momento y la restauró editando el archivo.

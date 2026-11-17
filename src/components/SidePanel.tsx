@@ -4,6 +4,8 @@ type SidePanelProps = {
   open: boolean;
   onClose: () => void;
   title: string;
+  /** false mientras hay una acción en curso (p. ej. enviando): no se cierra de ninguna forma. */
+  canClose?: boolean;
   children: ReactNode;
 };
 
@@ -12,7 +14,7 @@ type SidePanelProps = {
  * deja el resto de la página inerte y cierra con Escape. Se cierra también con ×, con el fondo
  * o desde dentro (onClose), y devuelve el foco al elemento que lo abrió.
  */
-export function SidePanel({ open, onClose, title, children }: SidePanelProps) {
+export function SidePanel({ open, onClose, title, canClose = true, children }: SidePanelProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
 
@@ -41,9 +43,13 @@ export function SidePanel({ open, onClose, title, children }: SidePanelProps) {
       ref={dialogRef}
       aria-labelledby="side-panel-title"
       onClose={handleClose}
+      // Escape dispara "cancel" antes de cerrar: se bloquea mientras no se pueda cerrar.
+      onCancel={(event) => {
+        if (!canClose) event.preventDefault();
+      }}
       // Un clic en el propio <dialog> (no en su contenido) es un clic en el fondo.
       onClick={(event) => {
-        if (event.target === dialogRef.current) dialogRef.current.close();
+        if (canClose && event.target === dialogRef.current) dialogRef.current.close();
       }}
       className="fixed inset-y-0 right-0 left-auto m-0 h-dvh max-h-none w-full max-w-md bg-white p-0 shadow-xl transition-transform duration-200 backdrop:bg-slate-900/40 motion-reduce:transition-none starting:open:translate-x-full"
     >
@@ -55,9 +61,12 @@ export function SidePanel({ open, onClose, title, children }: SidePanelProps) {
             </h2>
             <button
               type="button"
-              onClick={() => dialogRef.current?.close()}
+              onClick={() => {
+                if (canClose) dialogRef.current?.close();
+              }}
               aria-label="Cerrar"
-              className="flex size-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none"
+              aria-disabled={canClose ? undefined : true}
+              className="flex size-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
             >
               <svg
                 viewBox="0 0 20 20"
