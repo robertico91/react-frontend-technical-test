@@ -24,6 +24,7 @@ pnpm format:check   # pnpm format para aplicar el formato
 - **Alias `@/` → `src/`.** Lo fijo antes del primer import para no tener rutas `../../` entre carpetas.
 - **pnpm** como gestor de paquetes, con un único lockfile.
 - **`CLAUDE.md` antes del código.** Fija el stack, la estructura, las reglas de la API, de accesibilidad, de tests y de commits, para que la IA siga las decisiones en vez de improvisarlas.
+- **Cliente de API con `fetch` nativo.** Un `fetchJson` de unas pocas líneas basta; axios no aportaba nada aquí. Comprueba `res.ok` porque `fetch` no lanza con un 4xx o 5xx, y sin eso un 500 se trataría como éxito. Solo expongo `getUsers`, `getUserPosts` y `createPost`: el detalle saca el usuario de la lista ya cargada, así que no hace falta pedirlo aparte.
 
 ## Cómo usé la IA
 
