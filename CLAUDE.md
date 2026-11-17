@@ -47,7 +47,9 @@ Gestor de paquetes: **pnpm** (`pnpm-lock.yaml`). No uses npm ni yarn ni generes 
 
 No añadas dependencias sin justificarlo (axios, zod, clsx, librerías de UI, etc.). Lo que solo se usa al compilar o en desarrollo (Tailwind, Prettier, Vitest…) va en `devDependencies` (`pnpm add -D`).
 
-## Estructura
+## Estructura (objetivo)
+
+Estructura decidida antes de escribir código. Se completa a medida que llega cada feature: lo que aún no existe en `src/` está previsto, no falta.
 
 ```
 src/
