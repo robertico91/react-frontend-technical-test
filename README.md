@@ -13,6 +13,7 @@ pnpm build          # comprobación de tipos + build de producción
 pnpm typecheck
 pnpm lint
 pnpm format:check   # pnpm format para aplicar el formato
+pnpm test           # Vitest (pnpm test:watch en modo watch)
 ```
 
 La API responde muy rápido, así que en local apenas se ven los estados de carga. Para verlos: DevTools → Network → "Slow 3G" (carga) u "Offline" (error con "Reintentar").
@@ -51,6 +52,7 @@ La API responde muy rápido, así que en local apenas se ven los estados de carg
 - **Ids locales para lo creado.** `POST /posts` devuelve siempre `id: 101`, así que dos publicaciones creadas tendrían la misma `key`. Uso un contador negativo y decreciente (-1, -2…): sigue siendo un número y nunca coincide con los ids de la API.
 - **Envío sin dobles clics ni cierres a medias.** Mientras se publica, el botón dice "Publicando…", los campos son `readOnly` y los botones llevan `aria-disabled` (no `disabled`, que haría perder el foco) con la protección en el código; el panel no se puede cerrar. Si sale bien se cierra, se vuelve a la página 1 para ver la nueva arriba y aparece el aviso "Publicación creada". Si falla, el error sale dentro del formulario con `role="alert"` y lo escrito se conserva para reintentar.
 - **El error de envío dentro del formulario y no en un aviso flotante.** Con el panel modal abierto el resto de la página es inerte, así que un aviso fuera del `<dialog>` no se vería bien ni sería accesible. Junto a los botones, el usuario lo ve donde está trabajando.
+- **Tests con Vitest, Testing Library, user-event y MSW.** MSW intercepta la red, así que los tests usan el `fetch` real de la app y no mocks de mis propios módulos. Una petición sin handler hace fallar el test (`onUnhandledFrame: "error"` en MSW 3). Monto la app entera con `renderApp(ruta)`, con un `QueryClient` nuevo por test y sin reintentos, para que los tests de error no tarden ni fallen a veces. Los datos de prueba son propios, con tildes y un "Mrs.", y jsdom recibe los sustitutos mínimos de `<dialog>`, `scrollTo`, `scrollIntoView` y `checkVisibility`.
 
 ## Qué haría con más tiempo
 
@@ -73,6 +75,7 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - Las publicaciones del usuario elegido con la ficha completa del usuario y paginación.
 - El formulario de nueva publicación con validación, en un panel lateral.
 - Crear la publicación de verdad, que aparezca arriba de la lista y que no se pierda al cambiar de usuario.
+- Preparar los tests: Vitest, Testing Library y MSW, con un `renderApp(ruta)` y un primer test de humo.
 - Un skeleton también para el contador de publicaciones, que hasta entonces simplemente no aparecía mientras cargaban.
 - Retocar el panel del formulario: el título lo había puesto como "Nueva publicación de Leanne Graham" y le pedí dejarlo en "Nueva publicación" con una descripción debajo ("Para Leanne Graham"), y llevar los botones al final del panel en lugar de justo debajo del texto.
 - Que en móviles de menos de 375 px el botón "Nueva publicación" dijera solo "Nueva". Primero ocultó "publicación" con `sr-only`, pero al revisar el árbol de accesibilidad el botón aparecía como "Nueva" a secas; lo cambió por un `aria-label` fijo con el nombre completo.
@@ -102,4 +105,5 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - En la paginación probó `?page=9`, `?page=abc` y `?page=-1`, que al cambiar de usuario se vuelve a la página 1 y que en escritorio no se desplaza la página, solo la lista.
 - En el formulario probó enviar vacío y con solo espacios, que el error del título desaparecía al escribir y que el foco iba al primer campo inválido. También los cuatro cierres del panel (Escape, ×, fondo y Cancelar), comprobando que el foco volvía a "Nueva publicación" y que el formulario se vaciaba al reabrir. Como la captura de pantalla no mostraba el `<dialog>` modal, lo verificó midiendo su posición y su contenido en el DOM.
 - Para la creación hizo dos publicaciones seguidas (sin avisos de keys duplicadas), cambió de usuario y volvió, y forzó un refetch al volver a la ventana: las dos estaban arriba. Para el error hizo fallar el `POST` desde la consola del navegador con un retraso, y comprobó que mientras tanto Escape, × y el fondo no cerraban el panel, que salía el error y que se conservaba lo escrito. Dos veces creyó ver un fallo que en realidad venía de cómo lanzaba la prueba (abrir el panel con un `.click()` por código, sin foco en el botón, y pulsar Escape antes de que empezara el envío); antes de tocar el código lo repitió como lo haría un usuario y descartó los dos.
+- Al configurar MSW comprobó en sus tipos cómo se llama la opción para las peticiones sin handler (en la versión 3 cambió de nombre) y luego quitó un handler a propósito para ver que el test fallaba. En el handler del `POST` había escrito un `as` para tipar el cuerpo; el `typecheck` lo rechazó y lo cambió por el genérico de MSW, sin forzar tipos.
 - Comprueba cada pantalla en el navegador, no solo con el compilador. Para ver la carga y el error rompió la URL de la API un momento y la restauró editando el archivo.
