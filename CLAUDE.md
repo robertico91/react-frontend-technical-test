@@ -119,13 +119,19 @@ src/
 
 - Cada decisión nueva se explica en la sección "Decisiones" del `README.md` en el mismo commit que la introduce (una o dos líneas, en primera persona, con el porqué).
 - Las ideas que se descartan por tiempo van a "Qué haría con más tiempo" en cuanto aparecen.
+- "Qué haría con más tiempo": solo ideas concretas para esta app que se dejaron fuera por tiempo o por alcance, cada una con una línea en negrita (la idea) y el porqué o el cuándo ("con muchos usuarios…"). Nada que ya esté hecho, y se quita de la lista si al final se hace.
 - Si una decisión cambia una regla de este archivo, se actualiza aquí en el mismo commit.
 
 ## Uso de la IA
 
 - La sección "Cómo usé la IA" del `README.md` se va completando sobre la marcha, no al final: cada ejemplo se anota cuando ocurre, con detalle concreto (qué se pidió, con qué resultado), no de forma genérica.
 - Solo pedidos concretos del desarrollo y lo que salió de ellos.
-- Tres apartados, con ejemplos reales del propio desarrollo, no hipotéticos:
+- Apartados, con ejemplos reales del propio desarrollo, no hipotéticos, cada uno en el orden en que ocurrió:
   - **Qué le pedí**: instrucciones y cambios concretos que se le dieron.
   - **Qué acepté**: lo que propuso y se quedó tal cual, sin cambios.
   - **Qué corregí**: lo que se cambió, se rechazó o se le pidió rehacer, con el motivo. Aquí entran también los errores que la IA cometió y que se detectaron al revisar o probar la aplicación.
+  - **Qué le consulté**: preguntas de criterio (diseño, enfoque, plan de pruebas), qué respondió y qué se decidió.
+  - **Revisiones y comprobaciones**: cómo se verificó que algo funcionaba (navegador, tests, romper la app a propósito) y lo que salió de ahí.
+  - **En resumen**: un párrafo final, honesto, sobre qué aportó y qué hubo que decidir o corregir a mano.
+- Se consulta antes de cada commit y de cada push: la IA prepara el cambio y propone el mensaje, y el commit solo se hace con el visto bueno.
+- Cada ejemplo dice qué pasó, no se infla: si un fallo lo detectó la IA, se dice; si lo vi yo, también.
