@@ -4,6 +4,8 @@ type SidePanelProps = {
   open: boolean;
   onClose: () => void;
   title: string;
+  /** Línea bajo el título que da contexto (p. ej. para quién es la publicación). */
+  description?: string;
   /** false mientras hay una acción en curso (p. ej. enviando): no se cierra de ninguna forma. */
   canClose?: boolean;
   children: ReactNode;
@@ -14,7 +16,14 @@ type SidePanelProps = {
  * deja el resto de la página inerte y cierra con Escape. Se cierra también con ×, con el fondo
  * o desde dentro (onClose), y devuelve el foco al elemento que lo abrió.
  */
-export function SidePanel({ open, onClose, title, canClose = true, children }: SidePanelProps) {
+export function SidePanel({
+  open,
+  onClose,
+  title,
+  description,
+  canClose = true,
+  children,
+}: SidePanelProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
 
@@ -42,6 +51,7 @@ export function SidePanel({ open, onClose, title, canClose = true, children }: S
     <dialog
       ref={dialogRef}
       aria-labelledby="side-panel-title"
+      aria-describedby={description ? "side-panel-description" : undefined}
       onClose={handleClose}
       // Escape dispara "cancel" antes de cerrar: se bloquea mientras no se pueda cerrar.
       onCancel={(event) => {
@@ -55,10 +65,17 @@ export function SidePanel({ open, onClose, title, canClose = true, children }: S
     >
       {open && (
         <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-6 py-4">
-            <h2 id="side-panel-title" className="text-lg font-semibold text-slate-900">
-              {title}
-            </h2>
+          <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-6 py-4">
+            <div className="min-w-0">
+              <h2 id="side-panel-title" className="text-lg font-semibold text-slate-900">
+                {title}
+              </h2>
+              {description && (
+                <p id="side-panel-description" className="truncate text-sm text-slate-600">
+                  {description}
+                </p>
+              )}
+            </div>
             <button
               type="button"
               onClick={() => {
@@ -66,7 +83,7 @@ export function SidePanel({ open, onClose, title, canClose = true, children }: S
               }}
               aria-label="Cerrar"
               aria-disabled={canClose ? undefined : true}
-              className="flex size-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
+              className="flex size-9 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
             >
               <svg
                 viewBox="0 0 20 20"
@@ -81,7 +98,8 @@ export function SidePanel({ open, onClose, title, canClose = true, children }: S
               </svg>
             </button>
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+          {/* El contenido decide qué se desplaza (p. ej. el formulario fija sus botones abajo). */}
+          <div className="flex min-h-0 flex-1 flex-col">{children}</div>
         </div>
       )}
     </dialog>

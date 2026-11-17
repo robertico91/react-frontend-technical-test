@@ -31,7 +31,10 @@ export function PostsSection({ userId, userName }: PostsSectionProps) {
         setIsFormOpen(false);
         // La nueva va arriba: se vuelve a la página 1 para que se vea.
         setSearchParams({});
-        showToast("Publicación creada");
+        showToast({
+          title: "Publicación creada",
+          description: `Se ha añadido a las publicaciones de ${userName}.`,
+        });
       },
     });
   }
@@ -53,8 +56,11 @@ export function PostsSection({ userId, userName }: PostsSectionProps) {
         </span>
         {/* Por debajo de 375 px solo se ve "Nueva"; aria-label mantiene el nombre completo. */}
         <Button className="ml-auto" aria-label="Nueva publicación" onClick={openForm}>
-          <span aria-hidden="true">+</span> Nueva
-          <span className="max-[374px]:hidden"> publicación</span>
+          <span aria-hidden="true">+</span>
+          {/* Un solo hijo de texto: el gap del botón no separa "Nueva" de "publicación". */}
+          <span>
+            Nueva<span className="max-[374px]:hidden"> publicación</span>
+          </span>
         </Button>
       </div>
       <PostList userId={userId} userName={userName} />
@@ -62,7 +68,8 @@ export function PostsSection({ userId, userName }: PostsSectionProps) {
         open={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         canClose={!createPost.isPending}
-        title={`Nueva publicación de ${userName}`}
+        title="Nueva publicación"
+        description={`Para ${userName}`}
       >
         <NewPostForm
           onSubmit={handleSubmit}

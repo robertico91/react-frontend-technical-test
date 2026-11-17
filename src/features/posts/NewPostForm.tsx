@@ -46,31 +46,34 @@ export function NewPostForm({ onSubmit, onCancel, isSubmitting, submitError }: N
   }
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-5 p-6">
-      <Field
-        id="post-title"
-        label="Título"
-        value={draft.title}
-        onChange={(value) => update("title", value)}
-        error={errors.title}
-        readOnly={isSubmitting}
-        autoFocusInPanel
-      />
-      <Field
-        id="post-body"
-        label="Texto"
-        value={draft.body}
-        onChange={(value) => update("body", value)}
-        error={errors.body}
-        readOnly={isSubmitting}
-        multiline
-      />
-      {submitError && (
-        <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
-          {submitError}
-        </p>
-      )}
-      <div className="flex justify-end gap-3">
+    // Los campos se desplazan si hace falta; los botones quedan siempre al final del panel.
+    <form noValidate onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto p-6">
+        <Field
+          id="post-title"
+          label="Título"
+          value={draft.title}
+          onChange={(value) => update("title", value)}
+          error={errors.title}
+          readOnly={isSubmitting}
+          autoFocusInPanel
+        />
+        <Field
+          id="post-body"
+          label="Texto"
+          value={draft.body}
+          onChange={(value) => update("body", value)}
+          error={errors.body}
+          readOnly={isSubmitting}
+          multiline
+        />
+        {submitError && (
+          <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            {submitError}
+          </p>
+        )}
+      </div>
+      <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
         <Button
           variant="secondary"
           aria-disabled={isSubmitting || undefined}
