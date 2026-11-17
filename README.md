@@ -23,10 +23,11 @@ pnpm format:check   # pnpm format para aplicar el formato
 - **Saltos de línea LF.** Desarrollo en Windows; `.gitattributes` fuerza LF en el repositorio para que el formato no cambie según el sistema.
 - **Alias `@/` → `src/`.** Lo fijo antes del primer import para no tener rutas `../../` entre carpetas.
 - **pnpm** como gestor de paquetes, con un único lockfile.
+- **`CLAUDE.md` antes del código.** Fija el stack, la estructura, las reglas de la API, de accesibilidad, de tests y de commits, para que la IA siga las decisiones en vez de improvisarlas.
 
 ## Cómo usé la IA
 
-Uso Claude Code en el editor durante todo el desarrollo.
+Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir código dejé un [`CLAUDE.md`](CLAUDE.md) en la raíz con el stack, la estructura, las trampas de la API y las reglas de tests y commits; así no tengo que repetirle en cada paso que no meta axios o que no use `getByTestId`.
 
 **Qué le pedí**
 
