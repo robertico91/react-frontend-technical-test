@@ -6,10 +6,16 @@ import { UserAvatar } from "./UserAvatar";
 
 const SKELETON_ROWS = 6;
 
-type UserResultsProps = { query: UseQueryResult<User[]> };
+type UserResultsProps = {
+  query: UseQueryResult<User[]>;
+  /** Usuarios ya filtrados por la búsqueda. */
+  users: User[];
+  search: string;
+  onClearSearch: () => void;
+};
 
 /** Carga, error, vacío o lista: solo cambia esta parte, nunca la columna entera. */
-export function UserResults({ query }: UserResultsProps) {
+export function UserResults({ query, users, search, onClearSearch }: UserResultsProps) {
   if (query.isPending) {
     return (
       <Skeleton label="Cargando usuarios…">
@@ -44,9 +50,19 @@ export function UserResults({ query }: UserResultsProps) {
     return <StatusMessage kind="empty" message="No hay usuarios." />;
   }
 
+  if (users.length === 0) {
+    return (
+      <StatusMessage
+        kind="empty"
+        message={`Ningún usuario coincide con «${search.trim()}».`}
+        action={{ label: "Ver todos los usuarios", onClick: onClearSearch }}
+      />
+    );
+  }
+
   return (
     <ul className="divide-y divide-slate-100">
-      {query.data.map((user) => (
+      {users.map((user) => (
         <li key={user.id} className="flex items-center gap-3 px-4 py-3">
           <UserAvatar id={user.id} name={user.name} />
           <div className="min-w-0">

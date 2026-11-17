@@ -34,6 +34,13 @@ La API responde muy rápido, así que en local apenas se ven los estados de carg
 - **Usuarios ordenados por nombre.** Con `Intl.Collator("es")` en el `select` de la query: se ordena una vez al llegar los datos.
 - **Avatar con iniciales en varios colores, fijos por id.** El color ayuda a distinguir filas con iniciales iguales (Chelsey Dietrich y Clementina DuBuque son "CD") y no cambia al filtrar ni al ordenar. Uso tonos suaves para que no se lean como categorías ni compitan con la fila seleccionada, y el avatar es decorativo: el nombre está siempre al lado.
 - **Layout maestro-detalle.** En escritorio la app ocupa la altura de la ventana (`h-dvh`) y la lista tiene su propio scroll, con título y contador fijos encima. En móvil solo se desplaza el listado, sin scrolls anidados.
+- **Búsqueda en el cliente, sin pedir a la API.** JSONPlaceholder admite `name_like`, pero con 10 usuarios ya cargados filtrar en memoria es instantáneo y no genera peticiones ni estados de carga nuevos. `filterUsers` es una función pura que no distingue mayúsculas ni tildes (`normalize("NFD")`), así que "LEÁN" encuentra a Leanne.
+- **Sin debounce.** Con 10 elementos filtrar no cuesta nada; uso `useDeferredValue` para que escribir tenga siempre prioridad sobre volver a pintar la lista.
+- **Todo estado vacío ofrece una salida.** Si la búsqueda no encuentra nada, "Ver todos los usuarios" la limpia y devuelve el foco al buscador. El buscador está siempre visible, también mientras cargan los datos o si fallan, y el contador pasa a "2 de 10" al filtrar.
+
+## Qué haría con más tiempo
+
+- **Búsqueda en el servidor si hubiera muchos usuarios.** Con miles de registros o una lista paginada no los tendría todos en memoria: pasaría a buscar en el servidor con debounce, cancelando las peticiones que ya no sirven, y paginando los resultados.
 
 ## Cómo usé la IA
 
@@ -44,6 +51,7 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - Limpiar la plantilla de Vite (demo, assets, favicon) y crear un icono propio con el color de la app, para que no se viera nada de la plantilla.
 - Que me consultara antes de cada commit, en vez de encadenarlos: quiero revisar qué entra en cada uno.
 - El cliente de la API y la lista de usuarios con sus estados de carga, error y vacío.
+- La búsqueda por nombre en el cliente, sin distinguir mayúsculas ni tildes, con un estado vacío que permita volver a ver todos.
 
 **Qué acepté**
 
@@ -63,4 +71,5 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 
 - Le pedí revisar un commit ya hecho sin tocar nada. Comprobó punto por punto la configuración y, como el alias `@/` aún no lo usaba ningún import, lo verificó con un archivo temporal fuera del proyecto, en TypeScript y en Vite.
 - Al copiar las reglas a `CLAUDE.md` detectó que la estructura y la sección de tests nombraban distinto el helper de render de los tests, y lo unificó.
+- En la búsqueda probó en el navegador "LEÁN" (mayúsculas y tilde), una búsqueda sin resultados y el botón "Ver todos los usuarios", comprobando que el foco volvía al buscador.
 - Comprueba cada pantalla en el navegador, no solo con el compilador. Para ver la carga y el error rompió la URL de la API un momento y la restauró editando el archivo.

@@ -1,9 +1,10 @@
 import { Button } from "./Button";
 
 type StatusMessageProps =
-  { kind: "error"; message: string; onRetry: () => void } | { kind: "empty"; message: string };
+  | { kind: "error"; message: string; onRetry: () => void }
+  | { kind: "empty"; message: string; action?: { label: string; onClick: () => void } };
 
-/** Mensaje de error (con "Reintentar") o de estado vacío dentro de una lista. */
+/** Mensaje de error (con "Reintentar") o de estado vacío (con una salida opcional). */
 export function StatusMessage(props: StatusMessageProps) {
   if (props.kind === "error") {
     return (
@@ -16,5 +17,14 @@ export function StatusMessage(props: StatusMessageProps) {
     );
   }
 
-  return <p className="px-4 py-8 text-center text-sm text-slate-600">{props.message}</p>;
+  return (
+    <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
+      <p className="text-sm text-slate-600">{props.message}</p>
+      {props.action && (
+        <Button variant="secondary" onClick={props.action.onClick}>
+          {props.action.label}
+        </Button>
+      )}
+    </div>
+  );
 }
