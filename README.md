@@ -44,6 +44,9 @@ La API responde muy rápido, así que en local apenas se ven los estados de carg
 - **Ficha del usuario en la cabecera del detalle.** La lista solo muestra nombre y @usuario, que es más corto y reconocible que el email; el resto (email con `mailto:`, web, empresa y ciudad, en formato "Etiqueta: valor") va arriba del detalle, sin otra petición. El total de publicaciones va justo a continuación del título, no al final de la línea como en "Usuarios", porque ese hueco es para el botón "Nueva publicación".
 - **Publicaciones paginadas en el cliente, 5 por página, con la página en `?page=`.** En el servidor no podría: las publicaciones que se creen solo existirán en la caché. Una página fuera de rango (`?page=9`, `?page=abc`) se ajusta a la primera o la última en vez de mostrar una lista vacía. La lógica está en una función pura, `paginate`.
 - **En escritorio solo se desplazan las publicaciones.** La ficha y el título quedan fijos y la paginación siempre visible debajo. La lista tiene `tabIndex={0}` y nombre para poder desplazarla con el teclado. Al cambiar de página vuelve arriba, y en móvil se coloca justo bajo la cabecera fija.
+- **Formulario controlado a mano con una función pura `validatePost`.** Son dos campos obligatorios, así que react-hook-form + zod me parecía excesivo; la validación queda en una función fácil de testear. Si el formulario creciera pasaría a react-hook-form con zod, y usaría zod también para validar las respuestas de la API.
+- **Validación accesible.** Se valida al enviar y, desde ese primer intento, también al escribir, para que el error desaparezca en cuanto se corrige. Un título hecho solo de espacios no vale (`trim()`). Cada error va unido a su campo con `aria-invalid` y `aria-describedby`, y el foco salta al primer campo inválido; sin `role="alert"` por campo, que haría que se anunciaran todos a la vez.
+- **El formulario en un panel lateral derecho sobre un `<dialog>` nativo.** Con `showModal()` el navegador atrapa el foco, deja inerte la página de detrás y cierra con Escape, sin librerías. Se abre con "Nueva publicación", el foco va al título y al cerrar (×, Cancelar, Escape o clic en el fondo) vuelve al botón. Mientras está abierto la página de detrás no se desplaza. En pantallas de menos de 375 px el botón dice solo "Nueva" para que quepa junto al título; el botón lleva `aria-label="Nueva publicación"`, así que el lector de pantalla sigue oyendo el nombre completo.
 
 ## Qué haría con más tiempo
 
@@ -61,6 +64,8 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - La búsqueda por nombre en el cliente, sin distinguir mayúsculas ni tildes, con un estado vacío que permita volver a ver todos.
 - El routing con `/users/:userId`, el "Usuario no encontrado" y la navegación en móvil entre lista y detalle.
 - Las publicaciones del usuario elegido con la ficha completa del usuario y paginación.
+- El formulario de nueva publicación con validación, en un panel lateral.
+- Que en móviles de menos de 375 px el botón "Nueva publicación" dijera solo "Nueva". Primero ocultó "publicación" con `sr-only`, pero al revisar el árbol de accesibilidad el botón aparecía como "Nueva" a secas; lo cambió por un `aria-label` fijo con el nombre completo.
 
 **Qué acepté**
 
@@ -85,4 +90,5 @@ Uso Claude Code en el editor durante todo el desarrollo. Antes de escribir códi
 - En la búsqueda probó en el navegador "LEÁN" (mayúsculas y tilde), una búsqueda sin resultados y el botón "Ver todos los usuarios", comprobando que el foco volvía al buscador.
 - En el routing probó `/users/999`, `/users/abc`, `/users/0` y una ruta inventada, y en móvil abrió un usuario con el teclado para comprobar que el foco pasaba al título del detalle y, al volver, al de la lista, con la búsqueda intacta.
 - En la paginación probó `?page=9`, `?page=abc` y `?page=-1`, que al cambiar de usuario se vuelve a la página 1 y que en escritorio no se desplaza la página, solo la lista.
+- En el formulario probó enviar vacío y con solo espacios, que el error del título desaparecía al escribir y que el foco iba al primer campo inválido. También los cuatro cierres del panel (Escape, ×, fondo y Cancelar), comprobando que el foco volvía a "Nueva publicación" y que el formulario se vaciaba al reabrir. Como la captura de pantalla no mostraba el `<dialog>` modal, lo verificó midiendo su posición y su contenido en el DOM.
 - Comprueba cada pantalla en el navegador, no solo con el compilador. Para ver la carga y el error rompió la URL de la API un momento y la restauró editando el archivo.

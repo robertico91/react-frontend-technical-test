@@ -4,8 +4,7 @@ import type { User } from "@/api/types";
 import { NotFound } from "@/components/NotFound";
 import { Skeleton, SkeletonBlock } from "@/components/Skeleton";
 import { StatusMessage } from "@/components/StatusMessage";
-import { PostList } from "@/features/posts/PostList";
-import { usePosts } from "@/features/posts/usePosts";
+import { PostsSection } from "@/features/posts/PostsSection";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { parseUserId } from "./parseUserId";
 import { UserAvatar } from "./UserAvatar";
@@ -57,32 +56,8 @@ export function UserDetail() {
     // En escritorio la ficha y el título quedan fijos y solo se desplaza la lista de publicaciones.
     <div className="flex flex-col md:h-full md:min-h-0">
       <UserCard user={user} />
-      <section aria-labelledby="posts-title" className="flex flex-col md:min-h-0 md:flex-1">
-        <PostsHeading userId={user.id} />
-        {/* key: al cambiar de usuario, la lista empieza de cero (scroll y página). */}
-        <PostList key={user.id} userId={user.id} userName={user.name} />
-      </section>
-    </div>
-  );
-}
-
-/** Título con el total a continuación: el final de la línea queda para "Nueva publicación". */
-function PostsHeading({ userId }: { userId: number }) {
-  // Misma query que PostList: comparte caché, no hace otra petición.
-  const { data } = usePosts(userId);
-  return (
-    <div className="flex items-center gap-2 px-4 pt-4 md:px-6">
-      <h3 id="posts-title" className="text-base font-semibold text-slate-900">
-        Publicaciones
-      </h3>
-      <span aria-live="polite" className="text-sm text-slate-600">
-        {data && (
-          <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium">
-            {data.length}
-            <span className="sr-only"> publicaciones</span>
-          </span>
-        )}
-      </span>
+      {/* key: al cambiar de usuario, la sección empieza de cero (scroll, página y formulario). */}
+      <PostsSection key={user.id} userId={user.id} userName={user.name} />
     </div>
   );
 }

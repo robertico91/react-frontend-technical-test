@@ -3,3 +3,8 @@
 @theme {
   --color-brand: oklch(0.55 0.15 250);
 }
+
+/* Con el panel modal abierto, la página de detrás no se desplaza. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
