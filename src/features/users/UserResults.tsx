@@ -67,15 +67,15 @@ export function UserResults({ query, users, search, onClearSearch }: UserResults
         <li key={user.id}>
           <NavLink
             to={`/users/${user.id}`}
-            className="group flex items-center gap-3 px-4 py-3 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none focus-visible:ring-inset aria-[current=page]:bg-brand/10"
+            className="group flex items-center gap-3 px-4 py-3 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none focus-visible:ring-inset aria-[current=page]:bg-brand/10 aria-[current=page]:shadow-[inset_3px_0_0_var(--color-brand)]"
           >
             <UserAvatar id={user.id} name={user.name} />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-slate-900" title={user.name}>
                 {user.name}
               </p>
-              <p className="truncate text-xs text-slate-600" title={`@${user.username}`}>
-                @{user.username}
+              <p className="truncate text-xs text-slate-600" title={user.email}>
+                {user.email}
               </p>
             </div>
             <svg

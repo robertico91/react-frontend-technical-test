@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router";
 import { Button } from "@/components/Button";
+import { SkeletonBlock } from "@/components/Skeleton";
 import { SidePanel } from "@/components/SidePanel";
 import { useToast } from "@/components/toast/toastContext";
 import { NewPostForm } from "./NewPostForm";
@@ -14,7 +15,7 @@ type PostsSectionProps = { userId: number; userName: string };
 /** Título con el total, botón "Nueva publicación", lista y panel con el formulario. */
 export function PostsSection({ userId, userName }: PostsSectionProps) {
   // Misma query que PostList: comparte caché, no hace otra petición.
-  const { data } = usePosts(userId);
+  const { data, isPending } = usePosts(userId);
   const createPost = useCreatePost(userId);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [, setSearchParams] = useSearchParams();
@@ -46,14 +47,18 @@ export function PostsSection({ userId, userName }: PostsSectionProps) {
           Publicaciones
         </h3>
         {/* El total va junto al título: el final de la línea es para "Nueva publicación". */}
-        <span aria-live="polite" className="text-sm text-slate-600">
-          {data && (
+        <div aria-live="polite" className="flex text-sm text-slate-600">
+          {data ? (
             <span className="rounded-full bg-slate-100 px-2 py-0.5 font-medium">
               {data.length}
               <span className="sr-only"> publicaciones</span>
             </span>
+          ) : (
+            // Mismo tamaño que la etiqueta con el número. Solo visual: la carga ya la anuncia
+            // el skeleton de la lista.
+            isPending && <SkeletonBlock className="h-6 w-7 rounded-full" />
           )}
-        </span>
+        </div>
         {/* Por debajo de 375 px solo se ve "Nueva"; aria-label mantiene el nombre completo. */}
         <Button className="ml-auto" aria-label="Nueva publicación" onClick={openForm}>
           <span aria-hidden="true">+</span>
