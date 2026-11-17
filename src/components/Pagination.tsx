@@ -55,7 +55,13 @@ type PageLinkProps = { page: number; disabled: boolean; label: string; children:
 function PageLink({ page, disabled, label, children }: PageLinkProps) {
   if (disabled) {
     return (
-      <span aria-disabled="true" aria-label={label} className={`${ITEM} text-slate-300`}>
+      // role="link": aria-label no vale en un <span> sin rol. Sin href, no recibe el foco.
+      <span
+        role="link"
+        aria-disabled="true"
+        aria-label={label}
+        className={`${ITEM} text-slate-300`}
+      >
         <span aria-hidden="true">{children}</span>
       </span>
     );

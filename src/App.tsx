@@ -27,6 +27,14 @@ function App() {
     <div
       className={`flex flex-col bg-slate-50 text-slate-900 md:h-dvh ${isHome ? "h-dvh" : "min-h-dvh"}`}
     >
+      {/* En escritorio, el teclado no tiene que recorrer el buscador y toda la lista para
+          llegar al detalle. En móvil no hace falta: se ve la lista o el detalle. */}
+      <a
+        href="#contenido"
+        className="z-30 hidden rounded-lg bg-brand text-sm font-medium text-white focus-visible:outline-none md:sr-only md:block md:focus:not-sr-only md:focus:fixed md:focus:top-3 md:focus:left-3 md:focus:px-4 md:focus:py-2"
+      >
+        Saltar la lista de usuarios
+      </a>
       <AppHeader />
       {!isHome && (
         <nav
@@ -41,10 +49,14 @@ function App() {
           </Link>
         </nav>
       )}
-      <div className="mx-auto grid min-h-0 w-full max-w-6xl flex-1 grid-rows-[minmax(0,1fr)] md:grid-cols-[20rem_minmax(0,1fr)] md:gap-6 md:p-6">
+      {/* <main> envuelve lista y detalle: en la portada de móvil el detalle está oculto y la
+          lista es el contenido principal. */}
+      <main className="mx-auto grid min-h-0 w-full max-w-6xl flex-1 grid-rows-[minmax(0,1fr)] md:grid-cols-[20rem_minmax(0,1fr)] md:gap-6 md:p-6">
         <UserList hiddenOnMobile={!isHome} />
-        <main
-          className={`${isHome ? "hidden md:block" : "block"} min-h-0 bg-white md:overflow-y-auto md:rounded-xl md:border md:border-slate-200 md:shadow-sm`}
+        <div
+          id="contenido"
+          tabIndex={-1}
+          className={`focus:outline-none ${isHome ? "hidden md:block" : "block"} min-h-0 bg-white md:overflow-y-auto md:rounded-xl md:border md:border-slate-200 md:shadow-sm`}
         >
           <Routes>
             <Route path="/" element={<HomeScreen />} />
@@ -59,8 +71,8 @@ function App() {
               }
             />
           </Routes>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
